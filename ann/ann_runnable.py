@@ -63,7 +63,9 @@ def train_network(trainSet, testSet, listNeurons, stepMomentum, epochCount):
         ann.ann_network.depth -= 1
 
     ann.ann_network.depth -= 1
-    return listResults 
+    return listResults
+
+
 def getAvgResults( llResults, passCount ):
     toRet = []
 
@@ -82,7 +84,8 @@ def getAvgResults( llResults, passCount ):
 
 def start(listNeurons, listFeatures, stepMomentum, batchSize):
     ann.ann_network.LOG(" --- Pobieranie danych ---")
-    x_csv, y_csv = ann.ann_network.csvToData()
+    #x_csv, y_csv = ann.ann_network.csvToData()
+
     ann.ann_network.LOG(" --- Filtruj cechy ---")
     # ----------------------------------
     # Tworzenie neuronów
