@@ -11,12 +11,12 @@ class Net(nn.Module):
         super().__init__()
         self.fc1 = nn.Linear(count_start,count_neuron)
         self.fc2 = nn.Linear(count_neuron, count_neuron)
-        self.fc3 = nn.Linear(count_neuron,9)
+        self.fc3 = nn.Linear(count_neuron,10)
 
     def forward(self,x):
         x = F.relu(self.fc1(x) )
         x = F.relu(self.fc2(x) )
-        x = self.fc3(x)
+        x = self.fc3(x).float()
         return F.log_softmax(x,dim=1)
 
 def LOG(message):
