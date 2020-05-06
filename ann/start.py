@@ -1,7 +1,7 @@
-def start(listNeurons, listFeatures, stepMomentum, batchSize):
+def start(filename, listNeurons, listFeatures, stepMomentum, batchSize):
     ann.ann_network.LOG(" --- Pobieranie danych ---")
     # x_csv, y_csv = ann.ann_network.csvToData()
-    x_csv, y_csv = read_csv("../ZWIG-Bigramy/correlation-8.csv")
+    x_csv, y_csv = read_csv(filename)
 
     ann.ann_network.LOG(" --- Filtruj cechy ---")
     # ----------------------------------
