@@ -23,15 +23,15 @@ def saveResults( szPath : str, lResults : list):
 def train_network(numFeautes, trainSet, testSet, listNeurons, stepMomentum, epochCount):
     listResults = []
     Result = tuple() 
-
+    print(numFeautes)
     ann.ann_network.depth += 1
     for currNeuron in listNeurons:
         ann.ann_network.LOG("--- Tworzenie sieci z liczba neuronow: " + str(currNeuron) +  " ---")
-        curr_net =  ann.ann_network.Net(numFeautes, currNeuron )  
+        curr_net =  ann.ann_network.Net(numFeautes, currNeuron ).cuda()
         listLearningRates = [0.001]
         ann.ann_network.depth += 1
         for currLearningRate in listLearningRates:
-            currMomentum = 0
+            currMomentum = 0.3
             while currMomentum < 1:
                 ann.ann_network.LOG("--- Momentum: " + str(currMomentum) + ", Liczba neuronów: "+ str(currNeuron) + 
                         ", Stopień uczenia: " + str(currLearningRate) + " ---")
@@ -43,8 +43,8 @@ def train_network(numFeautes, trainSet, testSet, listNeurons, stepMomentum, epoc
                     for currData in trainSet:
                         x, y = currData
                         curr_net.zero_grad()
-                        result = curr_net(x)
-                        loss = torch.nn.functional.nll_loss( result, y )
+                        result = curr_net(x).cuda()
+                        loss = torch.nn.functional.nll_loss( result, y ).cuda()
                         loss.backward()
                         currOptimizer.step()
                 ann.ann_network.depth -= 1
@@ -98,8 +98,10 @@ def start(szFilename, listNeurons, listFeatures, stepMomentum, batchSize):
     # ----------------------------------
     # Tworzenie neuronów
     ann.ann_network.LOG(" --- Tworzenie neuronów we/wy ---")
-    x_tensor = torch.Tensor(x_csv.values)
-    y_tensor = torch.from_numpy(y_csv.values)
+    x_tensor = torch.Tensor(x_csv.values).cuda()
+    y_tensor = torch.Tensor(y_csv).type(torch.long).cuda()
+    print(x_tensor)
+    print(y_tensor)
     # ---------------------------------
     # Tworzenie datasetu podzielonego na pół
     ann.ann_network.LOG(" --- Dzielenie danych na pół ---")
