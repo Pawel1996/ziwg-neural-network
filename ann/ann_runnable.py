@@ -1,4 +1,5 @@
 import ann.ann_network, torch, numpy
+import ann.read_csv_function
 
 
 def dataset_splitted_half(x_tensor, y_tensor, size):
@@ -20,14 +21,18 @@ def saveResults( szPath : str, lResults : list):
                 f.write( str(element)+",") 
             f.write( str(result[-1])+"\n" ) 
 
-def train_network(numFeautes, trainSet, testSet, listNeurons, stepMomentum, epochCount):
+def train_network(numFeautes, trainSet, testSet, listNeurons, stepMomentum, epochCount, layersNumber):
     listResults = []
     Result = tuple() 
     print(numFeautes)
     ann.ann_network.depth += 1
     for currNeuron in listNeurons:
         ann.ann_network.LOG("--- Tworzenie sieci z liczba neuronow: " + str(currNeuron) +  " ---")
-        curr_net =  ann.ann_network.Net(numFeautes, currNeuron ).cuda()
+        curr_net =  ann.ann_network.Net(numFeautes, currNeuron, layersNumber)
+        # Testowanie liczby warstw
+        # for name, param in curr_net.named_parameters():
+        #    if param.requires_grad:
+        #        print(name, param.data)
         listLearningRates = [0.001]
         ann.ann_network.depth += 1
         for currLearningRate in listLearningRates:
@@ -43,8 +48,8 @@ def train_network(numFeautes, trainSet, testSet, listNeurons, stepMomentum, epoc
                     for currData in trainSet:
                         x, y = currData
                         curr_net.zero_grad()
-                        result = curr_net(x).cuda()
-                        loss = torch.nn.functional.nll_loss( result, y ).cuda()
+                        result = curr_net(x)
+                        loss = torch.nn.functional.nll_loss( result, y )
                         loss.backward()
                         currOptimizer.step()
                 ann.ann_network.depth -= 1
@@ -89,17 +94,16 @@ def getAvgResults( llResults, passCount ):
 
     return toRet
 
-import ann.read_csv_function 
-def start(szFilename, listNeurons, listFeatures, stepMomentum, batchSize):
+
+def start(szFilename, listNeurons, listFeatures, stepMomentum, batchSize, layersNumber):
     ann.ann_network.LOG(" --- Pobieranie danych ---")
-    #x_csv, y_csv = ann.ann_network.csvToData()
     x_csv, y_csv = ann.read_csv_function.read_csv( szFilename )
     ann.ann_network.LOG(" --- Filtruj cechy ---")
     # ----------------------------------
     # Tworzenie neuronów
     ann.ann_network.LOG(" --- Tworzenie neuronów we/wy ---")
-    x_tensor = torch.Tensor(x_csv.values).cuda()
-    y_tensor = torch.Tensor(y_csv).type(torch.long).cuda()
+    x_tensor = torch.Tensor(x_csv.values)
+    y_tensor = torch.Tensor(y_csv).type(torch.long)
     print(x_tensor)
     print(y_tensor)
     # ---------------------------------
@@ -109,5 +113,5 @@ def start(szFilename, listNeurons, listFeatures, stepMomentum, batchSize):
     # ---------------------------------
     # Trenowanie sieci
     ann.ann_network.LOG(" --- Trenowanie sieci na danych trenujących i testowanie na testujących ---")
-    saveResults("output_normal.csv", train_network( len(x_csv.columns) ,train, test, listNeurons, stepMomentum, 10) )
+    saveResults("output_normal.csv", train_network( len(x_csv.columns) ,train, test, listNeurons, stepMomentum, 10, layersNumber) )
 
