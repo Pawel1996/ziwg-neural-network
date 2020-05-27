@@ -1,5 +1,8 @@
 import ann.ann_runnable
-
+import sys
 if __name__ == "__main__":
-    ann.ann_runnable.start( "./ZWIG-Bigramy/anova-4.csv", [32], [], 0.1, 5, 4)
+        if len(sys.argv) != 3:
+            print("usage python app.py <src> <dest>") 
+        else:
+            ann.ann_runnable.start(sys.argv[1], sys.argv[2], [16], 0.4, [3,5], [10])
 

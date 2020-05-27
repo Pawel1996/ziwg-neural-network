@@ -9,6 +9,5 @@ def read_csv(filename):
             temp.append(celement)
 
     X = pd.read_csv(filename, header=None)
-    print(len(temp))
     X = X.drop(X.columns[0], axis=1)
     return X, temp

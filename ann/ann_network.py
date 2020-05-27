@@ -6,6 +6,19 @@ import torch.nn as nn
 import torch.nn.functional as F
 depth = 0
 
+
+class LSTM(nn.Module):
+    def __init__(self, count_start, count_neuron, layers_number):
+        super(LSTM, self).__init__()
+        self.lstm = nn.LSTM(count_start,  count_neuron)
+        self.hidden2tag = nn.Linear(count_neuron, 10)
+
+    def forward(self, x):
+        lstm_out, _ = self.lstm(x)
+        tag_space = self.hidden2tag(lstm_out(x)) 
+        tag_scores = F.log_softmax(tag_space, dim=1)
+        return tag_scores
+
 class Net(nn.Module):
     def __init__(self, count_start, count_neuron, layers_number):
         super().__init__()
